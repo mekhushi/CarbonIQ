@@ -53,10 +53,11 @@ def save_emission_to_csv(data):
 def load_emission_history():
     file_path = "emission_history.csv"
     if os.path.exists(file_path):
-        df = pd.read_csv(file_path)
-        return df
+        return pd.read_csv(file_path)
     else:
-        return 
+        # Return empty DataFrame with same structure
+        return pd.DataFrame(columns=["Electricity", "Vehicle", "Fuel", "Liters", "Distance", "CO2 Emission"])
+
 
 # ---------- Main App ----------
 def main():
