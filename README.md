@@ -29,7 +29,7 @@ An intuitive, user-friendly interface built with **Streamlit** for a seamless ex
 <img src="app/assets/calculator.png" alt="Calculator Screenshot" width="1000"/>
 
 ### 📈 Emission Trends
-<img src="app/assets/home.png" alt="History Screenshot" width="1000"/>
+<img src="app/assets/emission.png" alt="History Screenshot" width="1000"/>
 
 ---
 
