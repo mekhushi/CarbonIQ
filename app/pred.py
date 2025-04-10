@@ -17,7 +17,7 @@ def load_lottieurl(url: str):
         return None
 
 # -- Load Model --
-model_file_path = r"C:\Users\Khushi Singh\Downloads\Emission_tracer (2).sav"
+model_file_path = "app/Emission_tracer (2).sav"
 try:
     with open(model_file_path, "rb") as f:
         loaded_model = pickle.load(f)
