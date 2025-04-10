@@ -170,7 +170,8 @@ def main():
 
            # CO₂ by Fuel
             st.subheader("📊 CO₂ by Fuel")
-            fuel_summary = filtered_df.groupby("fuel_type")["co2_emissions_kg"].sum()
+          fuel_summary = filtered_df.groupby("Fuel")["CO2 Emission (kg)"].sum()
+
             st.bar_chart(fuel_summary)
 
 
