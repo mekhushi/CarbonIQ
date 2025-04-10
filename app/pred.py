@@ -160,7 +160,8 @@ def main():
             filtered_df = df[df["Fuel"].isin(fuel_filter)]
 
             st.subheader("📉 CO₂ Emission Trend")
-            st.line_chart(filtered_df["CO2 Emission (kg)"])
+            st.line_chart(filtered_df["co2_emissions_kg"])
+
 
 
 
