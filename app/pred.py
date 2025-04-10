@@ -83,7 +83,7 @@ def main():
 
     # ---------------- Tab 1: Home ----------------
     with tab1:
-        st.image(r"C:\Users\Khushi Singh\Downloads\pexels-fatih-turan-63325184-9835979.jpg", width=2000)
+        st.image("app/assets/pexels-fatih-turan-63325184-9835979.jpg", width=2000)
 
         st.header("📌 Key Features of CarbonIQ", divider="green")
 
