@@ -1,4 +1,4 @@
-🌱 CARBONIQ
+## 🌱 CARBONIQ
 Climate change is one of the most pressing challenges of our time. With rising global temperatures, unpredictable weather patterns, and increasing carbon emissions, it has become more crucial than ever to take action—both individually and collectively. One of the most significant contributors to global warming is the emission of greenhouse gases, particularly carbon dioxide (CO₂), resulting from electricity usage, transportation, and industrial processes.
 ![Factory landscape Photo by Pixabay from Pexels](app/assets/pollution.jpg)
 To empower individuals in their fight against climate change, we built CarbonIQ – an intelligent web application that allows users to estimate, monitor, and reduce their personal carbon footprint. Through real-time emission calculation, historical data visualization, and eco-friendly tips, CarbonIQ aims to create awareness and inspire change for a cleaner and greener planet.
