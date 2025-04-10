@@ -1,41 +1,62 @@
 import streamlit as st
+import pickle
+import numpy as np
 import pandas as pd
-import requests
+import os
 from streamlit_lottie import st_lottie
+import requests
 
-# ---------- Utility Functions ----------
-def load_lottie_url(url: str):
-    response = requests.get(url)
-    if response.status_code != 200:
+# Load Animation from URL
+def load_lottieurl(url: str):
+    try:
+        r = requests.get(url)
+        if r.status_code == 200:
+            return r.json()
         return None
-    return response.json()
+    except:
+        return None
 
+# -- Load Model --
+model_file_path = r"C:\Users\Khushi Singh\Downloads\Emission_tracer (2).sav"
+try:
+    with open(model_file_path, "rb") as f:
+        loaded_model = pickle.load(f)
+except Exception as e:
+    st.error(f"Model loading failed: {e}")
+    st.stop()
+
+# -- Prediction Function --
 def predict_emission(features):
-    # Placeholder prediction logic
-    return sum(features) * 10
+    input_array = np.array(features).reshape(1, -1)
+    prediction = loaded_model.predict(input_array)
+    return prediction[0]
 
-def save_emission_to_csv(record):
-    df = pd.DataFrame([record])
-    try:
-        existing = pd.read_csv("emission_history.csv")
-        df = pd.concat([existing, df], ignore_index=True)
-    except FileNotFoundError:
-        pass
-    df.to_csv("emission_history.csv", index=False)
-
-def load_emission_history():
-    try:
-        return pd.read_csv("emission_history.csv")
-    except FileNotFoundError:
-        return pd.DataFrame()
-
-def get_eco_tip(prediction):
-    if prediction < 100:
-        return "You're doing great! Keep it up 🌿"
-    elif prediction < 300:
-        return "Nice! Try using more public transport 🚍"
+# -- Eco Tip --
+def get_eco_tip(emission):
+    if emission > 800:
+        return "🚫 Try using public transport or switching to electric!"
+    elif emission > 500:
+        return "⚠️ Consider reducing fuel usage and track electricity use."
     else:
-        return "Consider reducing your electricity or fuel use 💡"
+        return "✅ Great job! You're being eco-conscious! 🌍"
+
+# -- Save Emission Record --
+def save_emission_to_csv(data):
+    file_path = "emission_history.csv"
+    df = pd.DataFrame([data])
+    if os.path.exists(file_path):
+        df.to_csv(file_path, mode='a', header=False, index=False)
+    else:
+        df.to_csv(file_path, index=False)
+
+# -- Load Emission History --
+def load_emission_history():
+    file_path = "emission_history.csv"
+    if os.path.exists(file_path):
+        df = pd.read_csv(file_path)
+        return df
+    else:
+        return 
 
 # ---------- Main App ----------
 def main():
@@ -44,7 +65,7 @@ def main():
     st.markdown("""
     Welcome to **CarbonIQ** – your smart CO₂ tracking companion.  
     Our mission: **Make the Earth cleaner, smarter, and greener.** 🌍
-    ---  
+    ---
     """)
     st.markdown("""
         <style>
@@ -56,74 +77,73 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
-    plant_anim = load_lottie_url("https://assets6.lottiefiles.com/packages/lf20_4kx2q32n.json")
+    plant_anim = load_lottieurl("https://assets6.lottiefiles.com/packages/lf20_4kx2q32n.json")
 
     tab1, tab2, tab3, tab4 = st.tabs(["🏠 Home", "🔍 Emission Calculator", "📊 Emission History", "💡 Eco Tips"])
 
     # ---------------- Tab 1: Home ----------------
     with tab1:
-       
         st.image(r"C:\Users\Khushi Singh\Downloads\pexels-fatih-turan-63325184-9835979.jpg", width=2000)
-        image_path = r"C:\Users\Khushi Singh\Downloads\pexels-fatih-turan-63325184-9835979.jpg"
 
-    
-        st.header("📌 Key Features of CarbonIQ" , divider = "green")
-       
+        st.header("📌 Key Features of CarbonIQ", divider="green")
+
         col1, col2, col3 = st.columns(3)
         with col1:
             st.subheader("🔍 Real-Time Emission Calculator")
             st.write("Predict CO₂ emissions from your electricity and vehicle usage.🌱")
 
         with col2:
-           
             st.markdown("#### 📈 Track Your History")
-            st.write("See your past emission records and proThe Track Your History feature in CarbonIQ allows you to monitor and reflect on your carbon emissions over time.  📊🌍.")
-
+            st.write("Monitor and reflect on your carbon emissions over time. 📊🌍")
 
         with col3:
-           
             st.markdown("#### 💡 Get Eco-Friendly Tips")
-            st.write("Get personalized tips to lower your carbon footprint.CarbonIQ not only helps you track emissions but also guides you with eco-friendly tips tailored to your lifestyle. These tips are designed to help you adopt sustainable habits in your daily routine—be it at home, work, or while commuting  🌱🌎")
+            st.write("Receive personalized suggestions to reduce your carbon footprint. 🌱🌎")
 
         st.markdown("---")
         st.subheader("🌱 Ready to take action?")
         st.markdown("Click on the **Emission Calculator** tab to begin!")
 
     # ---------------- Tab 2: Calculator ----------------
+
+
     with tab2:
-        st.header("🔍 CO₂ Emission Calculator")
+         st.header("🔍 CO₂ Emission Calculator")
 
-        electricity_kwh = st.number_input("🔌 Electricity Used (kWh)", min_value=0.0, format="%.2f")
+    electricity_kwh = st.number_input("🔌 Electricity Used (kWh)", min_value=0.0)
 
-        vehicle_type_dict = {"Car": 1, "Bus": 2, "Bike": 3, "Truck": 4}
-        fuel_type_dict = {"Diesel": 0, "EV": 1, "CNG": 2, "Petrol": 3}
-        emission_place = {"Mixed": 0, "Electricity": 1}
+    vehicle_type_dict = {"Car": 1, "Bus": 2, "Bike": 3, "Truck": 4}
+    fuel_type_dict = {"Diesel": 0, "EV": 1, "CNG": 2, "Petrol": 3}
+    emission_place = {"Mixed": 0, "Electricity": 1}
 
-        vehicle_name = st.selectbox("🚗 Vehicle Type", list(vehicle_type_dict.keys()))
-        fuel_name = st.selectbox("⛽ Fuel Type", list(fuel_type_dict.keys()))
-        fuel_liters = st.number_input("🛢️ Fuel Used (liters)", min_value=0.0, format="%.2f")
-        distance_km = st.number_input("🛣️ Distance Traveled (km)", min_value=0.0, format="%.2f")
-        emission_type = st.selectbox("🏭 Emission Source", list(emission_place.keys()))
+    vehicle_name = st.selectbox("🚗 Vehicle Type", list(vehicle_type_dict.keys()))
+    fuel_name = st.selectbox("⛽ Fuel Type", list(fuel_type_dict.keys()))
+    fuel_liters = st.number_input("🛢️ Fuel Used (liters)", min_value=0.0)
+    distance_km = st.number_input("🛣️ Distance Traveled (km)", min_value=0.0)
+    emission_type = st.selectbox("🏭 Emission Source", list(emission_place.keys()))
 
-        vehicle_type = vehicle_type_dict[vehicle_name]
-        fuel_type = fuel_type_dict[fuel_name]
-        emission_source = emission_place[emission_type]
+    vehicle_type = vehicle_type_dict[vehicle_name]
+    fuel_type = fuel_type_dict[fuel_name]
+    emission_source = emission_place[emission_type]
 
-        if st.button("🌿 Calculate CO₂ Emission"):
-            features = [electricity_kwh, vehicle_type, fuel_type, fuel_liters, distance_km, 0.0]
-            prediction = predict_emission(features)
+    if st.button("🌿 Calculate CO₂ Emission"):
+        features = [electricity_kwh, vehicle_type, fuel_type, fuel_liters, distance_km, emission_source]
+        prediction = predict_emission(features)
 
-            save_emission_to_csv({
-                "Electricity": electricity_kwh,
-                "Vehicle": vehicle_name,
-                "Fuel": fuel_name,
-                "Liters": fuel_liters,
-                "Distance": distance_km,
-                "CO2 Emission (g)": prediction
-            })
+        prediction_kg = prediction   # 🔥 Convert grams → kilograms
 
-            st.success(f"🌍 Estimated CO₂ Emission: **{prediction:.2f} grams**")
-            st.info(get_eco_tip(prediction))
+        save_emission_to_csv({
+            "Electricity (kWh)": electricity_kwh,
+            "Vehicle": vehicle_name,
+            "Fuel": fuel_name,
+            "Fuel Used (liters)": fuel_liters,
+            "Distance (km)": distance_km,
+            "CO2 Emission (kg)": prediction_kg
+        })
+
+        st.success(f"🌍 Estimated CO₂ Emission: **{prediction_kg:.2f} kg**")
+        st.info(get_eco_tip(prediction))
+
 
     # ---------------- Tab 3: History ----------------
     with tab3:
@@ -160,6 +180,7 @@ def main():
         - 🏡 Insulate your home to save energy  
         - ♻️ Reduce, Reuse, Recycle whenever possible  
         """)
+
 
 if __name__ == "__main__":
     main()
