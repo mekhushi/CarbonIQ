@@ -156,11 +156,11 @@ def main():
         else:
             st.dataframe(df.tail(10), use_container_width=True)
 
-            fuel_filter = st.multiselect("Filter by Fuel Type", df["Fuel"].unique(), default=df["Fuel"].unique())
-            filtered_df = df[df["Fuel"].isin(fuel_filter)]
+            fuel_filter = st.multiselect("Filter by Fuel Type", df["fuel_type"].unique(), default=df["fuel_type"].unique())
+            filtered_df = df[df["fuel_type"].isin(fuel_filter)]
 
             st.subheader("📉 CO₂ Emission Trend")
-            st.line_chart(filtered_df["CO2 Emission (kg)"])
+            st.line_chart(filtered_df["co2_emissions_kg"])
 
 
 
@@ -168,7 +168,7 @@ def main():
 
            # CO₂ by Fuel
             st.subheader("📊 CO₂ by Fuel")
-            fuel_summary = filtered_df.groupby("Fuel")["CO2 Emission (kg)"].sum()
+            fuel_summary = filtered_df.groupby("fuel_type")["co2_emissions_kg"].sum()
             st.bar_chart(fuel_summary)
 
 
