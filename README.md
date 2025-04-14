@@ -45,6 +45,6 @@ An intuitive, user-friendly interface built with **Streamlit** for a seamless ex
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/carboniq.git
+   git clone https://github.com/mekhushi/carboniq.git
    cd carboniq
 
